@@ -1,0 +1,6 @@
+pandas
+streamlit
+tabulate
+matplotlib
+plotly
+kaleido
