@@ -19,7 +19,7 @@ def load_data():
     try:
         # Optymalizacja pamięci przez określenie typów kolumn
         data = pd.read_csv(
-            "polskirap3.csv", 
+            "polskirap2.csv", 
             sep=",",
             dtype={
                 'artist': 'string',
