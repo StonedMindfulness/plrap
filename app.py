@@ -70,20 +70,17 @@ def create_interactive_calendar(discover_data):
     dates = [today + timedelta(days=i) for i in range(30)]
 
     # Tworzenie widoku w układzie tygodniowym
-    cols_per_week = 7
-    for week_start in range(0, len(dates), cols_per_week):
-        week_dates = dates[week_start : week_start + cols_per_week]
-        cols = st.columns(len(week_dates))
-
-        for i, date in enumerate(week_dates):
-            with cols[i]:
+    week_data = [dates[i:i + 7] for i in range(0, len(dates), 7)]
+    
+    for week in week_data:
+        cols = st.columns(len(week))
+        for idx, date in enumerate(week):
+            with cols[idx]:
                 st.markdown(f"**{date.day} {date.strftime('%b')}**")
-                if i < len(discover_data):
-                    album = discover_data.iloc[i]
+                if len(discover_data) > idx:
+                    album = discover_data.iloc[idx]
                     st.image(album['thumb'], width=100) if pd.notna(album['thumb']) else st.text("Brak zdjęcia")
-                    st.markdown(
-                        f"🎵 **{album['artist']} - {album['album_title']} ({album['year']})**"
-                    )
+                    st.markdown(f"🎵 **{album['artist']} - {album['album_title']} ({album['year']})**")
                 else:
                     st.text("Brak albumu")
 
