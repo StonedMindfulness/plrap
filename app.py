@@ -68,7 +68,6 @@ def create_interactive_calendar(discover_data):
 
     # Generowanie dni od aktualnego dnia na 30 dni do przodu
     dates = [today + timedelta(days=i) for i in range(30)]
-    weeks = calendar.Calendar().monthdayscalendar(today.year, today.month)
 
     # Tworzenie widoku w układzie tygodniowym
     cols_per_week = 7
@@ -104,13 +103,13 @@ with tabs[0]:
     st.subheader("🎤 Wyszukiwanie albumów")
     col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
     with col1:
-        artist_filter = st.text_input("Wykonawca:")
+        artist_filter = st.text_input("Wykonawca:", key="filters_artist")
     with col2:
-        year_filter = st.slider("Zakres lat wydania:", 1991, 2024, (1991, 2024))
+        year_filter = st.slider("Zakres lat wydania:", 1991, 2024, (1991, 2024), key="filters_year")
     with col3:
-        label_filter = st.text_input("Wytwórnia:")
+        label_filter = st.text_input("Wytwórnia:", key="filters_label")
     with col4:
-        track_filter = st.text_input("Szukaj w tracklistach:")
+        track_filter = st.text_input("Szukaj w tracklistach:", key="filters_tracklist")
 
     filtered_data = data[
         (data['artist'].str.contains(artist_filter, na=False)) &
@@ -127,7 +126,7 @@ with tabs[0]:
 
     results_per_page = 20
     total_pages = -(-len(filtered_data) // results_per_page)
-    page = st.slider("Strona:", 1, total_pages, 1)
+    page = st.slider("Strona:", 1, total_pages, 1, key="filters_page")
     start_idx = (page - 1) * results_per_page
     end_idx = start_idx + results_per_page
 
@@ -185,7 +184,7 @@ with tabs[1]:
     st.plotly_chart(fig_decade_artist, use_container_width=True)
 
     st.markdown("### Filtry dla statystyk")
-    filter_year_range = st.slider("Zakres lat do analizy:", int(data['year'].min()), int(data['year'].max()), (1990, 2024))
+    filter_year_range = st.slider("Zakres lat do analizy:", int(data['year'].min()), int(data['year'].max()), (1990, 2024), key="stats_year_range")
     filtered_stats = data[
         (data['year'].between(filter_year_range[0], filter_year_range[1])) &
         (~data['artist'].str.contains("Various", na=False)) &
@@ -209,7 +208,7 @@ with tabs[2]:
 
     col1, col2 = st.columns([1, 2])
     with col1:
-        selected_year = st.selectbox("Wybierz rok:", sorted(data['year'].unique()))
+        selected_year = st.selectbox("Wybierz rok:", sorted(data['year'].unique()), key="visualizations_year_select")
     with col2:
         st.markdown(f"### Albumy wydane w roku {selected_year}")
         albums_in_year = data[data['year'] == selected_year]
@@ -234,25 +233,11 @@ with tabs[3]:
     st.subheader("🎲 Odkryj Rap")
 
     # Ustawienia filtrów
-    start_year, end_year = st.slider("Zakres lat:", 1991, 2024, (1991, 2024))
-    label_filter = st.text_input("Wytwórnia (opcjonalnie):")
+    start_year, end_year = st.slider("Zakres lat:", 1991, 2024, (1991, 2024), key="discover_year_slider")
+    label_filter = st.text_input("Wytwórnia (opcjonalnie):", key="discover_label_filter")
 
     # Generowanie listy albumów
-    if st.button("Generuj listę"):
-        discover_data = generate_discover_list(data, start_year, end_year, label_filter)
-        if not discover_data.empty:
-            create_interactive_calendar(discover_data)
-        else:
-            st.warning("Nie znaleziono albumów dla podanych kryteriów.")
-
-    st.subheader("🎲 Odkryj Rap")
-
-    # Ustawienia filtrów
-    start_year, end_year = st.slider("Zakres lat:", 1991, 2024, (1991, 2024))
-    label_filter = st.text_input("Wytwórnia (opcjonalnie):")
-
-    # Generowanie listy albumów
-    if st.button("Generuj listę"):
+    if st.button("Generuj listę", key="discover_generate_button"):
         discover_data = generate_discover_list(data, start_year, end_year, label_filter)
         if not discover_data.empty:
             create_interactive_calendar(discover_data)
